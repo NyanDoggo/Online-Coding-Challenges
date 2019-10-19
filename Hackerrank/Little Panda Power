@@ -1,0 +1,123 @@
+import java.io.*;
+import java.math.*;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class Solution {
+public static int modInverse(int a, int m)
+    {
+        int m0 = m;
+        int y = 0, x = 1;
+
+        if (m == 1)
+            return 0;
+
+        while (a > 1)
+        {
+            // q is quotient
+            int q = a / m;
+
+            int t = m;
+
+            // m is remainder now, process
+            // same as Euclid's algo
+            m = a % m;
+            a = t;
+            t = y;
+
+            // Update x and y
+            y = x - q * y;
+            x = t;
+        }
+
+        // Make x positive
+        if (x < 0)
+            x += m0;
+
+        return x;
+    }
+        
+        // To compute x^y under modulo m 
+        static int power(int x, int y, int m)  
+        { 
+            if (y == 0) 
+                return 1; 
+            
+            int p = power(x, y / 2, m) % m; 
+            p = (p * p) % m; 
+        
+            if (y % 2 == 0) 
+                return p; 
+            else
+                return (x * p) % m; 
+        } 
+        
+        // Function to return gcd of a and b 
+        public static int gcd(int a, int b)  
+        { 
+            if (a == 0) 
+                return b; 
+            return gcd(b % a, a); 
+        } 
+
+        private static BigInteger fastModPow(BigInteger base, BigInteger exponent, final BigInteger modulo) {
+        BigInteger result = BigInteger.ONE;
+        while (exponent.compareTo(BigInteger.ZERO) > 0) {
+            if (exponent.testBit(0)) // then exponent is odd
+                result = (result.multiply(base)).mod(modulo);
+            exponent = exponent.shiftRight(1);
+            base = (base.multiply(base)).mod(modulo);
+        }
+        return result.mod(modulo);
+    }
+    public static int solve(int a, int b, int x) {
+        BigInteger biginta = new BigInteger(Integer.toString(a));
+        BigInteger bigintb = new BigInteger(Integer.toString(b));
+        BigInteger bigintx = new BigInteger(Integer.toString(x));
+        int result = 0;
+        if (b < -1){
+            result = modInverse(a,x);
+            b = Math.abs(b);
+            bigintb = new BigInteger(Integer.toString(b));
+            BigInteger tmp = new BigInteger(Integer.toString(result));
+
+            result = fastModPow(tmp, bigintb, bigintx).intValue();
+        }else if (b == -1){
+            result = modInverse(a,x);
+        }else{
+            result = fastModPow(biginta, bigintb, bigintx).intValue();
+        }
+        return result;
+    }
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int t = scanner.nextInt();
+        scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
+
+        for (int tItr = 0; tItr < t; tItr++) {
+            String[] abx = scanner.nextLine().split(" ");
+
+            int a = Integer.parseInt(abx[0]);
+
+            int b = Integer.parseInt(abx[1]);
+
+            int x = Integer.parseInt(abx[2]);
+
+            int result = solve(a, b, x);
+
+            bufferedWriter.write(String.valueOf(result));
+            bufferedWriter.newLine();
+        }
+
+        bufferedWriter.close();
+
+        scanner.close();
+    }
+}
+
+// Code
